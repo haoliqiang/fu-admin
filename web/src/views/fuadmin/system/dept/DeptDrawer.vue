@@ -13,9 +13,6 @@
       :model="dynamicValidateForm"
       @finish="onFinish"
     >
-      <a-form-item name="area" label="Area" :rules="[{ required: true, message: 'Missing area' }]">
-        <a-select v-model:value="dynamicValidateForm.area" :options="areas" />
-      </a-form-item>
       <a-space
         v-for="(sight, index) in dynamicValidateForm.sights"
         :key="sight.id"
@@ -23,30 +20,76 @@
         align="baseline"
       >
         <a-form-item
-          :name="['sights', index, 'value']"
-          label="Sight"
-          :rules="{
-            required: true,
-            message: 'Missing sight',
-          }"
+          name="area"
+          label="Area"
+          :rules="[{ required: true, message: 'Missing area' }]"
         >
-          <a-select
-            v-model:value="sight.value"
-            :disabled="!dynamicValidateForm.area"
-            :options="(sights[dynamicValidateForm.area] || []).map((a) => ({ value: a }))"
-            style="width: 130px"
-          ></a-select>
+          <a-select v-model:value="sight.area" :options="areas" />
         </a-form-item>
-        <a-form-item
-          label="Price"
-          :name="['sights', index, 'price']"
-          :rules="{
-            required: true,
-            message: 'Missing price',
-          }"
+        <a-space
+          v-if="sight.area === 'Beijing'"
+          style="display: flex; margin-bottom: 8px"
+          align="baseline"
         >
-          <a-input v-model:value="sight.price" />
-        </a-form-item>
+          <a-form-item
+            :name="['sights', index, 'value']"
+            label="Sight"
+            :rules="{
+              required: true,
+              message: 'Missing sight',
+            }"
+          >
+            <a-select
+              v-model:value="sight.value"
+              :disabled="!dynamicValidateForm.area"
+              :options="(sights[dynamicValidateForm.area] || []).map((a) => ({ value: a }))"
+              style="width: 130px"
+            ></a-select>
+          </a-form-item>
+          <a-form-item
+            label="Price"
+            :name="['sights', index, 'price']"
+            :rules="{
+              required: true,
+              message: 'Missing price',
+            }"
+          >
+            <a-input v-model:value="sight.price" />
+          </a-form-item>
+        </a-space>
+        <a-space
+          v-else-if="sight.area === 'HangZhou'"
+          style="display: flex; margin-bottom: 8px"
+          align="baseline"
+        >
+          <a-form-item
+            :name="['sights', index, 'value']"
+            label="Sight"
+            :rules="{
+              required: true,
+              message: 'Missing sight',
+            }"
+          >
+            <a-select
+              v-model:value="sight.value"
+              :disabled="!dynamicValidateForm.area"
+              :options="(sights[dynamicValidateForm.area] || []).map((a) => ({ value: a }))"
+              style="width: 130px"
+            ></a-select>
+          </a-form-item>
+        </a-space>
+        <a-space v-else style="display: flex; margin-bottom: 8px" align="baseline">
+          <a-form-item
+            label="Price"
+            :name="['sights', index, 'price']"
+            :rules="{
+              required: true,
+              message: 'Missing price',
+            }"
+          >
+            <a-input v-model:value="sight.price" />
+          </a-form-item>
+        </a-space>
         <MinusCircleOutlined v-if="index !== 0" @click="removeSight(sight)" />
         <PlusOutlined @click="addSight" />
       </a-space>
@@ -68,6 +111,7 @@
   import type { FormInstance } from 'ant-design-vue';
 
   interface Sights {
+    area: string;
     value: string;
     price: string;
     id: number;
@@ -81,23 +125,25 @@
       const areas = [
         { label: 'Beijing', value: 'Beijing' },
         { label: 'Shanghai', value: 'Shanghai' },
+        { label: 'HangZhou', value: 'HangZhou' },
       ];
 
       const sights = {
         Beijing: ['Tiananmen', 'Great Wall'],
         Shanghai: ['Oriental Pearl', 'The Bund'],
+        HangZhou: [' HangZhou', 'xihu'],
       };
 
       const formRef = ref<FormInstance>();
       const dynamicValidateForm = reactive<{ sights: Sights[]; area: string }>({
         sights: [
           {
+            area: 'Beijing',
             value: undefined,
             price: undefined,
             id: Date.now(),
           },
         ],
-        area: 'Beijing',
       });
       watch(
         () => dynamicValidateForm.area,
@@ -113,6 +159,7 @@
       };
       const addSight = () => {
         dynamicValidateForm.sights.push({
+          area: 'Beijing',
           value: undefined,
           price: undefined,
           id: Date.now(),
