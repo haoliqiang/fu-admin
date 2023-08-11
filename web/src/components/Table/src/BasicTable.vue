@@ -30,6 +30,16 @@
       <template #headerCell="{ column }">
         <HeaderCell :column="column" />
       </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'name'">
+          <a v-if="record.url" :href="record.url" target="_blank">
+            {{ record.name }}
+          </a>
+          <div v-else>
+            {{ record.name }}
+          </div>
+        </template>
+      </template>
       <!--      <template #[`header-${column.dataIndex}`] v-for="(column, index) in columns" :key="index">-->
       <!--        <HeaderCell :column="column" />-->
       <!--      </template>-->
